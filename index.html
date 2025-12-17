@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <title>Barómetro de la Logística de Comercio Exterior de Chile</title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"
+  />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"
+  ></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"
+  ></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <script src="node_modules/chartjs-chart-error-bars/build/index.umd.min.js"></script>
+  <!-- <script src="node_modules/chartjs-error-bars-main/Plugin.Errorbars.js"></script> -->
+
+
+  <link rel="stylesheet" type="text/css" href="css/styles.css?v=1.0" />
+  <link rel="stylesheet" type="text/css" href="css/graph.css?v=1.0" />
+  <link rel="stylesheet" type="text/css" href="css/animation.css?v=1.0" />
+  <link rel="stylesheet" type="text/css" href="css/barometer.css?v=1.0" />
+  <link rel="stylesheet" type="text/css" href="css/snackbar.css?v=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.2.61/jspdf.min.js"></script>
+
+  
+
+
+  <script src="js/helpers.js?v=1.0"></script>
+  <script src="js/characterization.js?v=1.0"></script>
+  <script src="js/barometer.js?v=1.0"></script>
+  <script src="js/utils.js?v=1.0"></script>
+  <script src="js/graphBar.js?v=1.0"></script>
+  <script src="js/toggleViews.js?v=1.0"></script>
+  <script src="js/bodyCharacterization.js?v=1.0"></script>
+  <script src="js/bodyBarometer.js?v=1.0"></script>
+  <script src="js/functions.js"></script>
+  <script src="js/formatData.js"></script>
+
+
+
+
+  <script src="json/barometer.js"></script>
+  <script src="json/caracterizacion.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script> <!-- PapaParse para extraer descripciones de archivo csv -->
+
+
+
+
+
+
+  
+</head>
+
+<body>
+
+
+  <script type="text/javascript">
+    var env = 'prod'; // seteo de enviroment (dev o prod)
+    var back = "main";
+    var colors = ["#5197E0", "#D0E051", "#E05B51", "#8F271F", "#0D3661", "#5C6612"]; // colores de años/barras
+
+    var colorIndicador = ["#43A047","#5E35B1","#2979FF","#FF9800","#BF360C","#00897B"]; // colores para menú de acordeón
+
+    var yearsCurrent = [];
+    var yearsTotal = [];
+    var yearsAvailable = [];
+
+    var yearsCharacterization = [];
+    var yearsBarometer = [];
+
+    var titleGraph = "";
+    var labelsGraph = [];
+    var dataGraph = [];
+
+    var myCharacterizationGraph = null;
+    var myBarometerGraph = null;
+    var myBarometerGraph2 = null;
+    var currentSubdimension = null;
+
+    var yearsCharacterizationOriginal = [];
+    var yearsBarometerOriginal = [];
+
+    var allDimensions = null;
+
+    var optionsPercentaje = {
+      plugins: {
+        title: {
+          display: true,
+          text: ''
+        },
+        datalabels: {
+          formatter: (value, ctx) => {
+            return value+"%";
+          }
+        }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 100
+        // display: false,
+      }
+    },
+    layout: {
+      padding: {                   
+        top: 10,
+        bottom: 10
+      }
+    }
+  };
+
+  var optionsNumbers = {
+    plugins: {
+      title: {
+        display: true,
+        text: ''
+      }
+    },
+    layout: {
+      padding: {                   
+        top: 10,
+        bottom: 10
+      }
+    }
+  };
+
+
+  var characterization = getUrl('CARAC-DE-LAS-EMPRE-QUE');
+  var barometer  = getUrl('INDIC-DEL-BAROM-DE-LA');
+
+
+  $( document ).ready(function() {
+    graphBarRender();
+
+
+
+    var hash = getHashValue('17a204b272bde0be79e2058aa9daeb86');
+
+    try{
+      var obj = decodeObjectBase64(hash);
+
+      console.log("HASH1",obj);
+
+      if(obj.hasOwnProperty('graph')){
+        runData(true);
+        if(obj.graph=="barometer"){
+          // ... dentro de if(obj.graph=="barometer"){ ...
+
+          openBarameter();
+          removeData(window.myBarometerGraph);
+          
+          // ANTES: Asignaba opciones genéricas (window.optionsPercentaje)
+          // AHORA: Cargamos las opciones completas y correctas del URL
+          if(obj.options) {
+            window.myBarometerGraph.options = obj.options;
+          } else {
+            // Fallback si por alguna razón no se guardaron las opciones
+            window.myBarometerGraph.options = window.optionsPercentaje; 
+          }
+          
+          // No borres ni reasignes el título, ya que ahora está dentro de obj.options
+          
+          window.myBarometerGraph.update();
+          addData(obj.labels, obj.dataset, window.myBarometerGraph);
+          $('#description-chart-barometer').html(obj.description);
+        }
+        else if(obj.graph=="characterization"){
+          openCharacterization();
+          removeData(window.myCharacterizationGraph);
+          if(obj.title=="Cantidad Empresas"){
+            window.myCharacterizationGraph.options = window.optionsNumbers;
+          }
+          else{
+            window.myCharacterizationGraph.options = window.optionsPercentaje;
+          }
+          window.myCharacterizationGraph.update();
+          window.myCharacterizationGraph.options.plugins.title.text = obj.title;
+
+          addData(obj.labels,obj.dataset,window.myCharacterizationGraph);
+          $('#description-chart-characterization').html(obj.description);
+          //$('#sources-chart-characterization').html(obj.sources);
+        }
+
+      }
+      else runData();
+
+    }
+    catch(e){
+      runData();
+    }
+
+
+  });
+
+
+</script>
+
+
+<!-- Inicio Vista Principal -->
+<div class="row" id="body-main">
+
+  <select style="position: fixed;top: 10px; right: 10px; display: none;" id="env" onchange="changeEnv(this)">
+
+  </select>
+
+  <div class="col-md-5">
+    <div class="col-center-block" style="padding-top: 70px;">
+      <span style="font-size: 30px; font-weight: bold;text-align: left;">Mapa de la <br>Logística</span>
+      <p>Ingresa a una categoría <br>para ver sus contenidos</p>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="col-center-block">
+          <div class="card-bg" onclick="openCharacterization()">
+           <div class="col-center-block">
+            <img src="svg/box-search.svg" class="col-center-block">
+            <p style="color: #1E88E5; clear: both; text-align: center; font-size: 14px; margin-top: 20px;">Módulo:</p>
+            <p style="color: #1E88E5; clear: both; text-align: center; font-size: 16px; color:#263238">Caracterización de las <br>empresas participantes</p>
+            <button style="background: #1E88E5; color: white; padding: 5px 40px; border: none; border-radius: 5px;">Ver más datos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="col-center-block">
+        <div class="card-bg" onclick="openBarameter()">
+          <div class="col-center-block">
+            <img src="svg/box-square.svg" class="col-center-block">
+            <p style="color: #1E88E5; clear: both; text-align: center; font-size: 14px; margin-top: 20px;">Módulo:</p>
+            <p style="color: #1E88E5; clear: both; text-align: center; font-size: 16px; color:#263238">Barómetro de la Logística <br>del Comercio Exterior</p>
+            <button style="background: #1E88E5; color: white; padding: 5px 40px; border: none; border-radius: 5px;">Ver más datos</button>
+          </div>  
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<span style="position: fixed;bottom: 10px;left: 10px;color: gray;font-size: 10px;font-weight: 400;">Versión 202202110814</span>
+</div>
+<!-- Fin Vista Principal -->
+
+
+
+
+
+
+<!-- Inicio Vista Caracterizacion -->
+<div class="row" id="body-characterization">
+  <div class="col-md-12">
+    <button onclick="backView()" style="background: white; color:#2979FF; border: 1px solid #2979FF; border-radius: 5px; padding: 5px 10px;"><img src="svg/arrow.svg" /> Volver</button>
+    <p style="margin: 20px 0; font-size: 12px;"><span style="cursor: pointer;" onclick="backView()">Home</span> <img src="svg/arrow-right.svg"> <span style="cursor: pointer;" onclick="bodyCharacterization(window.yearsCharacterization);">Caracterización de las empresas participantes</span> <img src="svg/arrow-right.svg"> <span id="breadcrumbs-characterization"></span> </p>
+
+
+
+    <p style="margin: 0 0 13px 0; font-size: 26px; font-weight: 400; cursor: pointer;" onclick="$('#breadcrumbs-characterization').empty(); bodyCharacterization(window.yearsCharacterization);">Caracterización de las empresas participantes</p>
+
+    
+
+
+    <select class="years-select" onchange="changeYear(this)"></select>
+
+    <p class="years-selected"></p>
+
+    <p class="mensaje-selected" style="color: red;font-size: 14px;font-weight: 300;display: none;">Debe existir al menos un año seleccionado</p>
+
+
+    
+    <hr>
+    <div class="row">
+      <div class="col-md-4" id="characterization-items"></div>
+      <div class="col-md-8">
+       <div class="card-bg graph-charact" style="padding-bottom: 45px !important;">
+        <canvas id="characterization-graph"></canvas>
+        <img src="svg/marca.svg" style="height: 45px; float: right">
+      </div>
+
+
+      <hr class="graph-charact">
+
+      <div class="row graph-charact">
+
+        <div class="col-sm" onclick="downloadPDFCharacterization()">
+          <div class="card-single-btn">
+            <center><img src="svg/arrow-down.svg" style="width: 22px;" > <span style="color: #000000">Descargar Gráfico</span></center>
+          </div>
+        </div>
+
+
+        <div class="col-sm" onclick="downloadJsonCharacterization()">
+          <div class="card-single-btn">
+            <center><img src="svg/arrow-down.svg" style="width: 22px;"> <span style="color: #000000">JSON</span></center>
+          </div>
+        </div>
+
+
+        <div class="col-sm" onclick="downloadCsvCharacterization()">
+          <div class="card-single-btn">
+            <center><img src="svg/arrow-down.svg" style="width: 22px;"> <span style="color: #000000">CSV</span></center>
+          </div>
+        </div>
+
+        <!-- <div class="col-sm" onclick="shareCharacterization()">
+          <div class="card-single-btn" style="position: relative;">
+            <center>
+              <img src="svg/copy.svg" style="width: 15px;margin-right:5px;"> <span style="color: #000000"> Copiar Link</span>
+              
+              <span id="feedback-tooltip-barometer" 
+                    style="position: absolute; top: -35px; left: 50%; transform: translateX(-50%); 
+                          background-color: rgba(0, 0, 0, 0.5); color: white; padding: 4px 8px; 
+                          border-radius: 4px; opacity: 0; transition: opacity 0.3s; 
+                          pointer-events: none; z-index: 100;">
+                ¡Copiado!
+              </span>
+            </center>
+          </div>
+        </div> -->
+
+
+
+      </div>
+
+
+
+      <br class="graph-charact">
+
+
+      <div class="row">
+        <div class="col-md-12">
+          <p><strong>Descripción</strong></p>
+          <p style="font-weight: 300; text-align: justify;" id="description-chart-characterization"> </p>
+
+
+          <p style="text-align: justify; font-size: 12px;">
+            <strong>Fuentes</strong><br>
+            Indicadores del Barómetro de la Logística de Comercio Exterior<br>
+            Observatorio Logístico<br>
+            <a href="https://www.observatoriologistico.cl" target="_blank">www.observatoriologistico.cl</a><br>
+            <strong>Datos: </strong><a href="https://observatoriologistico.cl/datos/caracterizacion-empresas-participantes-del-barometro-de-comercio-exterior" target="_blank">https://observatoriologistico.cl/datos/caracterizacion-empresas-participantes-del-barometro-de-comercio-exterior</a>
+          </p>
+
+
+        </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</div>
+</div>
+<!-- Fin Vista Caracterizacion -->
+
+
+
+
+
+<div class="row" id="body-barometer">
+  <div class="col-md-12">
+    <button onclick="backView()" style="background: white; color:#2979FF; border: 1px solid #2979FF; border-radius: 5px; padding: 5px 10px;"><img src="svg/arrow.svg" /> Volver</button>
+    <p style="margin: 20px 0; font-size: 12px;"><span style="cursor: pointer;" onclick="backView()">Home</span> <img src="svg/arrow-right.svg"> <span style="cursor: pointer;" onclick="$('#breadcrumbs-barometer').empty(); bodyBarometer(window.allDimensions);">Barómetro de la Logística del Comercio Exterior</span> <img src="svg/arrow-right.svg"> <span id="breadcrumbs-barometer"></span> </p>
+    
+    <p style="margin: 0 0 13px 0; font-size: 26px; font-weight: 400;"><span style="cursor: pointer;" onclick="$('#breadcrumbs-barometer').empty(); bodyBarometer(window.allDimensions);">Barómetro de la Logística del Comercio Exterior</p>
+
+    <select class="years-select" onchange="changeYear(this)"></select>
+
+    <p class="years-selected"></p>
+
+    <p class="mensaje-selected" style="color: red;font-size: 14px;font-weight: 300;display: none;">Debe existir al menos un año seleccionado</p>
+
+    <hr>
+    
+    <div class="row">
+      
+      <div class="col-md-4">
+        <div class="panel-group" id="accordion">
+          <div class="panel panel-default" id="barometer-items">
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+       
+        <div class="row">
+            
+            <div id="container-graph-1" class="col-12 col-md-12 col-xl-12">
+                <div class="card-bg graph-charact" style="padding-bottom: 45px !important;">
+                    <canvas id="barometer-graph"></canvas>
+                    <p class="error-bars" style="float:left; color: gray; display: none; font-size: 14px; font-weight: 300; margin-right: 20px">Barras Verticales: Margen de error</p>
+                    <p class="no-preguntado" style="float:left; color:gray; display: none; font-size: 14px; font-weight: 300">NP: No preguntado</p>
+                </div>
+            </div>
+
+            <div id="container-graph-2" class="col-12 col-md-12 col-xl-6" style="display: none;">
+                <div class="card-bg graph-charact" style="padding-bottom: 45px !important;">
+                    <canvas id="barometer-graph2"></canvas>
+                    <img src="svg/marca.svg" style="height: 45px; float: right">
+                </div>
+            </div>
+
+        </div>
+        <hr class="graph-charact">
+
+        <div class="row graph-charact">
+          <div class="col-sm" onclick="downloadPDFBarometer()">
+            <div class="card-single-btn">
+              <center><img src="svg/arrow-down.svg" style="width: 22px;" > <span style="color: #000000">Descargar Gráfico</span></center>
+            </div>
+          </div>
+
+          <div class="col-sm" onclick="downloadJsonBarometer()">
+            <div class="card-single-btn">
+              <center><img src="svg/arrow-down.svg" style="width: 22px;"> <span style="color: #000000">JSON</span></center>
+            </div>
+          </div>
+
+          <div class="col-sm" onclick="downloadCsvBarometer()">
+            <div class="card-single-btn">
+              <center><img src="svg/arrow-down.svg" style="width: 22px;"> <span style="color: #000000">CSV</span></center>
+            </div>
+          </div>
+        </div>
+
+        <br class="graph-charact">
+
+        <div class="row">
+          <div class="col-md-12">
+            <p><strong>Descripción</strong></p>
+            <p style="font-weight: 300; text-align: justify;" id="description-chart-barometer"></p>
+
+            <p style="text-align: justify; font-size: 12px;">
+              <strong>Fuentes</strong><br>
+              Indicadores del Barómetro de la Logística de Comercio Exterior<br>
+              Observatorio Logístico<br>
+              <a href="https://www.observatoriologistico.cl" target="_blank">www.observatoriologistico.cl</a><br>
+              <strong>Datos: </strong><a href="https://observatoriologistico.cl/datos/barometro-de-la-logistica-de-comercio-exterior" target="_blank">https://observatoriologistico.cl/datos/barometro-de-la-logistica-de-comercio-exterior</a>
+            </p>
+          </div>
+        </div>
+
+      </div> </div>
+  </div>
+</div>
+
+
+
+
+
+
+<a id="downloadAnchorElem" style="display:none"></a>
+
+<div id="snackbar"></div> 
+
+</body>
+</html>

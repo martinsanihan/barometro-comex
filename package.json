@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "chartjs-chart-error-bars": "^4.4.5",
+    "csv-parse": "^6.1.0",
+    "fs": "^0.0.1-security"
+  }
+}

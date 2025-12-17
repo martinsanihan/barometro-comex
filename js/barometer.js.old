@@ -1,0 +1,133 @@
+function transformBarometer(data) {
+
+	let anios = uniq(data.dataArray,"anio");
+	let years = [];
+
+
+
+	//anio - jerarquia - dimension - subdimension - categoria - actorlogistico - valor
+	$.each(anios, function(k,year) { 
+
+
+		let valorYear = 0;
+
+
+		let dimensiones = [];
+		$.each(data.dataArray, function(k,elem) { 
+			if(year==elem.anio){
+				dimensiones.push(elem);
+			}
+		});
+		dimensiones = uniq(dimensiones,"dimension");
+		let dimensionList = [];
+
+		$.each(dimensiones, function(k,dimen) { 
+
+
+			//console.log("WWWW",dimen);
+
+			let valorDimension = 0;
+
+			let subdimensiones = [];
+			$.each(data.dataArray, function(k,elem) { 
+				if(year==elem.anio && dimen==elem.dimension){
+					subdimensiones.push(elem);
+				}
+			});
+			subdimensiones = uniq(subdimensiones,"subdimension");
+			let subdimensionesList = [];
+			$.each(subdimensiones, function(k,subdimen) { 
+
+
+				let valorSubDimension = 0;
+
+				let categorias = [];
+				$.each(data.dataArray, function(k,elem) { 
+					if(year==elem.anio && dimen==elem.dimension && subdimen==elem.subdimension){
+						categorias.push(elem);
+					}
+				});
+				categorias = uniq(categorias,"categoria");
+
+				let categoriasList = [];
+				$.each(categorias, function(k,cat) { 
+
+					let valorCategoria = 0;
+
+					let actorlogisticos = [];
+					let cats = [];
+					$.each(data.dataArray, function(k,elem) { 
+						if(year==elem.anio && dimen==elem.dimension && subdimen==elem.subdimension && cat==elem.categoria){
+							actorlogisticos.push(elem);
+						}
+					});
+					actorlogisticos = uniq(actorlogisticos,"actorlogistico");
+
+					let actorlogisticosList = [];
+					$.each(actorlogisticos, function(k4,actor) { 
+						$.each(data.dataArray, function(k2,elem) { 
+							if(year==elem.anio && dimen==elem.dimension && subdimen==elem.subdimension && cat==elem.categoria && actor==elem.actorlogistico){
+								if(actor!="Total" || (actor=="Total" && actorlogisticosList.length===0)) actorlogisticosList.push({"actorlogistico":actor,"valor":elem.valor});
+								if(subdimen=="Total" && cat=="Total" && actor=="Total") valorYear = elem.valor;
+							}
+						});
+					});
+
+					categoriasList.push({"categoria":cat,"actorlogisticos":actorlogisticosList,"valor":valorCategoria});
+
+
+
+				});
+
+
+				if(String(subdimen).indexOf("_Indicador")==-1) subdimensionesList.push({"subdimension":subdimen,"categorias":categoriasList,"valor":valorSubDimension});
+
+
+
+			});
+
+
+			if(String(dimen).indexOf("Indicador del Barómetro de la Logística de Comercio Exterior")==-1) dimensionList.push({"dimension":dimen,"subdimensiones":subdimensionesList,"valor":0});
+
+
+
+		});
+
+
+		years.push({"anio":year,"dimensiones":dimensionList,"valor":valorYear});
+
+
+
+
+	});
+
+
+
+	$.each(years, function(k,year) { 
+		var valYear = 0;
+		$.each(year.dimensiones, function(k,dimen) { 
+			var valDimen = 0;
+			$.each(dimen.subdimensiones, function(k,subdimen) { 
+				var valActor = 0;
+				$.each(subdimen.categorias, function(k,cat) { 
+					var valActorDes = 0;
+					$.each(cat.actorlogisticos, function(k,actor) { 
+						valActorDes+=parseFloat(actor.valor);
+					});
+					cat.valor = Math.round(valActorDes/cat.actorlogisticos.length);
+					valActor+=parseFloat(cat.valor);
+				});
+				subdimen.valor = Math.round(valActor/subdimen.categorias.length);
+				valDimen+=parseFloat(subdimen.valor);
+			});
+			dimen.valor = Math.round(valDimen/dimen.subdimensiones.length);
+			//valYear+=parseFloat(dimen.valor);
+		});
+		//year.valor = Math.round(valYear/year.dimensiones.length);
+	});
+
+
+
+	return years;
+
+}

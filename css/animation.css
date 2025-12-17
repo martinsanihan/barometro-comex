@@ -1,0 +1,28 @@
+@-webkit-keyframes fadein {
+	from { height: 0; }
+	to { height: 100%; }
+}
+
+@-moz-keyframes fadein {
+	from { height: 0; }
+	to { height: 100%; }
+}
+
+@keyframes fadein {
+	from { height: 0; }
+	to { height: 100%; }
+}
+
+.bar {
+	padding: 20px;
+
+	-webkit-animation: fadein 0.7s ease-in 0s 1;
+	-moz-animation: fadein 0.7s ease-in 0s 1;
+	animation: fadein 0.7s ease-in 0s 1;
+
+}
+
+
+rec:hover{
+  transform: scale(1.2);
+}

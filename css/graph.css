@@ -1,0 +1,147 @@
+.color-box {
+  height: 10px;
+  width: 10px;
+  margin: 2px;
+}
+.bar {
+  padding: 20px;
+}
+#bar1 {
+  text-align: right;
+}
+#bar2 {
+  text-align: center;
+}
+#bar3 {
+  text-align: left;
+}
+.fr {
+  margin-top: -20px;
+  text-align: right !important;
+  width: unset !important;
+}
+.fc {
+  margin-top: -20px;
+  width: unset !important;
+}
+.fl {
+  margin: -20px 5px 0 0;
+  text-align: left;
+  width: unset !important;
+  text-align: left !important;
+}
+
+
+.padding-graph-container{
+    padding: 20px 40px;
+}
+
+
+
+.left-graph-container{
+    background: #F9F9FE;
+    height: 520px;
+    width: 50%;
+    float: left;
+    border-radius: 10px 0 0 10px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+
+.right-graph-container{
+    background: white;
+    height: 520px;
+    width: 50%;
+    float: left;
+    border-radius: 0 10px 10px 0;
+    padding: 20px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.title-graph{
+  color:#59A7FF;
+  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+
+.subtitle-graph{
+  color:#59A7FF;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+.menu-button{
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.menu-button:hover{
+  transform: scale(1.2);
+}
+
+.padding-graph-single{
+  padding: 10px;
+}
+
+
+.graph-single{
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.05);
+}
+
+
+.graph-single td{
+  padding: 0 5px;
+}
+
+
+.card-single{
+
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.05);
+
+}
+
+
+.btn-graph{
+  height: 70px;
+  color: white;
+  font-size: 20px;
+  font-weight: 200;
+  padding-top: 20px;
+  cursor: pointer;
+}
+
+
+
+.btn-graph:hover{
+  transform: scale(1.05);
+}
+
+
+
+.btn-year{
+  height: 150px;
+  font-size: 25px;
+  font-weight: 200;
+  padding-top: 55px;
+  cursor: pointer;
+  margin: 20px 0;
+}
+
+
+.btn-year:hover{
+  transform: scale(1.05);
+}

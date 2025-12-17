@@ -1,0 +1,1018 @@
+function bodyBarometer(yearsBarometer,is_hash=false){
+
+
+  console.log("hash3",is_hash);
+
+
+  if(!is_hash) $('.graph-charact').hide();
+  else $('.graph-charact').show();
+
+  let datasets = [];
+  let iterator = 0;
+  if(!is_hash) window.labelsGraph = [];
+  if(!is_hash) window.labelsGraph.push("Barómetro de la Logística del Comercio Exterior");
+
+  if(!is_hash) window.myBarometerGraph.options.plugins.title.text = "Barómetro de la Logística del Comercio Exterior";
+
+  
+
+  let htmlText = '';
+  htmlText +='Se presenta el Barómetro de la Logística según la composición de sus diversos subíndices:';
+  htmlText +='<ul>';
+  htmlText +='<li>Indicador de percepción de la logística chilena</li>';
+  htmlText +='<li>Indicador de desempeño de la logística chilena</li>';
+  htmlText +='<li>Indicador TI de la logística chilena</li>';
+  htmlText +='<li>Indicador de sostenibilidad de la logística chilena</li>';
+  htmlText +='<li>Indicador de información para la competitividad del sector logístico</li>';
+  htmlText +='</ul>';
+
+  if(!is_hash) $('#description-chart-barometer').html(htmlText);
+
+  $.each(yearsBarometer, function(k,year) { 
+
+
+    if(window.yearsCurrent.includes(String(year.anio))){
+      $('#barometer-items').empty();
+
+      const itemsList = ["", "", "", "", ""]; 
+
+      //console.log("yearsCurrent",window.yearsCurrent);
+
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        let newDimension = '<div class="panel-heading">';
+        newDimension += '<a style="border-left: 4px solid '+window.colorIndicador[k1]+' !important;" onclick="renderGraphBarometerDimension(this)" data-color="'+window.colorIndicador[k1]+'" data-dimension="'+dimen.dimension+'" href="#dimension-'+k1+'" data-toggle="collapse" data-parent="#accordion" class="col-center-block card-item card-items">';
+        newDimension += dimen.dimension;
+        newDimension += '<img src="svg/arrow-right.svg"></a></div>';
+        newDimension += '<div id="dimension-'+k1+'" class="panel-collapse collapse in collapse-custom">';
+
+
+        //newDimension += '<div onclick="renderGraphBarometerParent(this)" data-dimension="'+dimen.dimension+'"  class="col-center-block card-item card-items">Total <img src="svg/arrow-right.svg"></div>';
+
+        var is_satisfaccion = false;
+
+        if(dimen.dimension=="Indicador de Percepción del Barómetro logístico"){
+          newDimension += '<div style="border-left: 4px solid '+window.colorIndicador[k1]+' !important;" data-color="'+window.colorIndicador[k1]+'" onclick="renderGraphBarometerFuturaVsActual(this)" data-dimension="'+dimen.dimension+'"  class="col-center-block card-item card-items">Expectativa Futura vs Situación Actual <img src="svg/arrow-right.svg"></div>';
+          newDimension += '<div style="border-left: 4px solid '+window.colorIndicador[k1]+' !important;" data-color="'+window.colorIndicador[k1]+'" onclick="renderGraphBarometerFuturaVsActualOpUs(this)" data-dimension="'+dimen.dimension+'"  class="col-center-block card-item card-items">Expectativa Futura vs Situación Actual Operadores y Usuarios <img src="svg/arrow-right.svg"></div>';
+        }
+        else{
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+            if(dimen.dimension=="Indicador de Desempeño de la Logística chilena" && String(subdimen.subdimension).indexOf("Satisfacción")!=-1){
+              is_satisfaccion = true;
+            }
+            else{
+
+              if(subdimen.subdimension!="Total") newDimension += '<div style="border-left: 4px solid '+window.colorIndicador[k1]+' !important;" data-color="'+window.colorIndicador[k1]+'" onclick="renderGraphBarometerSubDimension(this)" data-dimension="'+dimen.dimension+'"  data-subdimension="'+subdimen.subdimension+'" class="col-center-block card-item card-items">'+subdimen.subdimension+' <img src="svg/arrow-right.svg"></div>';
+
+            }
+            
+          });
+        }
+
+        if(is_satisfaccion){
+          newDimension += '<div style="border-left: 4px solid '+window.colorIndicador[k1]+' !important;" data-color="'+window.colorIndicador[k1]+'" onclick="renderGraphBarometerSubDimension(this)" data-dimension="'+dimen.dimension+'"  data-subdimension="Satisfacción Sistema Logístico" class="col-center-block card-item card-items">Satisfacción Sistema Logístico <img src="svg/arrow-right.svg"></div>';
+        }
+
+        
+        newDimension += '</div>';
+
+
+
+
+
+        if(dimen.dimension=="Indicador de Percepción del Barómetro logístico") itemsList[0] = newDimension;
+        else if(dimen.dimension=="Indicador de Desempeño de la Logística chilena") itemsList[1] = newDimension;
+        else if(dimen.dimension=="Indicador TI de la Logística chilena") itemsList[2] = newDimension;
+        else if(dimen.dimension=="Indicador de Sostenibilidad de la Logística chilena") itemsList[3] = newDimension;
+        else if(dimen.dimension=="Indicador de información para la competitividad del sector logístico") itemsList[4] = newDimension;
+
+
+        
+
+      });
+
+
+
+      $('#barometer-items').append(itemsList[0]);
+      $('#barometer-items').append(itemsList[1]);
+      $('#barometer-items').append(itemsList[2]);
+      $('#barometer-items').append(itemsList[3]);
+      $('#barometer-items').append(itemsList[4]);
+
+
+      let dataset = {
+        label: String(year.anio),
+        data: [year.valor],
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+
+
+
+
+  });
+
+
+
+
+if(!is_hash) removeData(window.myBarometerGraph);
+if(!is_hash) addData(window.labelsGraph,datasets,window.myBarometerGraph);
+
+
+
+
+
+}
+
+
+
+function renderGraphBarometerDimension(ID,texto1=false){
+
+
+  $('.graph-charact').show();
+
+  $('.panel-collapse').collapse('hide');
+
+  
+  let dimension = null;
+
+  if(texto1!==false){
+    dimension = texto1;
+  }
+  else{
+    dimension = $(ID).data('dimension');
+    $('.card-items').removeClass("item-active");
+    $('.card-items').css("background", "white");
+    $(ID).addClass("item-active");
+    $(".item-active").css("background", $(ID).data('color'));
+  }
+
+
+  let datasets = [];
+  let iterator = 0;
+  window.labelsGraph = [];
+
+
+  window.myBarometerGraph.options.plugins.title.text = dimension;
+
+  console.log("DIMEN1",dimension);
+  if(dimension=="Indicador de Percepción del Barómetro logístico"){
+    $('#description-chart-barometer').text("Se presenta el resultado del porcentaje de empresas que cuentan con visión positiva sobre la situación actual y la situación futura de la logística del comercio exterior.");
+    console.log("DIMEN2",dimension);
+  }
+  else if(dimension=="Indicador TI de la Logística chilena"){
+    $('#description-chart-barometer').text("Se presentan los resultados a cada uno de los indicadores que componen el índice TI de la Logística chilena.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena"){
+    $('#description-chart-barometer').text("Se presentan los resultados asociados a los subindicadores que componen el índice y se asocian a respuestas positivas en cada uno y altos niveles de satisfacción.");
+  }
+  else if(dimension=="Indicador de Sostenibilidad de la Logística chilena"){
+    $('#description-chart-barometer').text("Se presenta el resultado de cada uno de los elementos que componen el índice, dando cuenta del porcentaje de empresas participantes que declaran niveles de accidentabilidad, de certificaciones, que cuentan con metodologías de medición de la huella de carbono y de aquellas que cuentan con relacionamiento con la comunidad.");
+  }
+  else if(dimension=="Indicador de información para la competitividad del sector logístico"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de satisfacción con una serie de elementos asociados a la información disponible en el Observatorio Logístico y el porcentaje de empresas que declara haber visitado el Observatorio Logístico.");
+  }
+  else $('#description-chart-barometer').text("");
+
+
+
+
+  
+
+
+
+  $("#breadcrumbs-barometer").empty();
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\''+dimension+'\')">'+dimension+'</span> <img src="svg/arrow-right.svg">');
+
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(window.yearsCurrent.includes(String(year.anio))){
+
+      let dataDimension = [];
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+            if(iterator==0) window.labelsGraph.push(subdimen.subdimension=="Total"?dimen.dimension:subdimen.subdimension);
+            dataDimension.push(subdimen.valor);
+          });
+        }
+        
+
+      });
+
+
+
+      let dataset = {
+        label: String(year.anio),
+        data: dataDimension,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+  removeData(window.myBarometerGraph);
+  addData(window.labelsGraph,datasets,window.myBarometerGraph);
+
+
+
+
+
+}
+
+
+
+
+
+
+
+function renderGraphBarometerFuturaVsActual(ID){
+
+  $('.graph-charact').show();
+
+  let dimension = $(ID).data('dimension');
+  $('.card-items').removeClass("item-active");
+  $('.card-items').css("background", "white");
+  $(ID).addClass("item-active");
+  $(".item-active").css("background", $(ID).data('color'));
+  
+
+
+  let datasets = [];
+  let iterator = 0;
+  window.labelsGraph = [];
+
+
+  var d = new Date();
+  var cY = d.getFullYear() - 1;
+  var pY = d.getFullYear() - 2;
+
+  let titleTemp = "Expectativa Futura "+pY+" vs Situación Actual "+cY;
+
+  window.labelsGraph.push(titleTemp);
+
+  window.myBarometerGraph.options.plugins.title.text = titleTemp;
+
+  $('#description-chart-barometer').text("Se presenta las expectativas positivas de la situación futura "+pY+" de la logística del comercio exterior, comparada con la situación actual "+cY+".");
+
+  $("#breadcrumbs-barometer").empty();
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\''+dimension+'\')">'+dimension+'</span> <img src="svg/arrow-right.svg"> <span>'+titleTemp+'</span> <img src="svg/arrow-right.svg">');
+
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(String(year.anio)==String(pY)){
+
+      let dataDimension = [];
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+
+            if(subdimen.subdimension=="Expectativa Futura") dataDimension.push(subdimen.valor);
+
+          });
+          
+        }
+        
+
+      });
+
+
+
+      let dataset = {
+        label: "Expectativa Futura "+pY,
+        data: dataDimension,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(String(year.anio)==String(cY)){
+
+      let dataDimension = [];
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+
+            if(subdimen.subdimension=="Visión Situación Actual") dataDimension.push(subdimen.valor);
+
+          });
+          
+        }
+        
+
+      });
+
+
+
+      let dataset = {
+        label: "Visión Situación Actual "+cY,
+        data: dataDimension,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+
+
+
+  removeData(window.myBarometerGraph);
+  addData(window.labelsGraph,datasets,window.myBarometerGraph);
+
+
+
+
+
+}
+
+
+
+
+
+
+function renderGraphBarometerFuturaVsActualOpUs(ID){
+
+  $('.graph-charact').show();
+
+  let dimension = $(ID).data('dimension');
+  $('.card-items').removeClass("item-active");
+  $('.card-items').css("background", "white");
+  $(ID).addClass("item-active");
+  $(".item-active").css("background", $(ID).data('color'));
+  
+
+
+  let datasets = [];
+  let iterator = 0;
+  window.labelsGraph = [];
+
+
+  var d = new Date();
+  var cY = d.getFullYear() - 1;
+  var pY = d.getFullYear() - 2;
+
+  let titleTemp = "Expectativa Futura "+pY+" vs Situación Actual "+cY+" por Operadores y Usuarios";
+
+  
+
+  window.myBarometerGraph.options.plugins.title.text = titleTemp;
+
+  $('#description-chart-barometer').text("Se presenta las expectativas positivas de la situación futura "+pY+" de la logística del comercio exterior, comparada con la situación actual "+cY+".");
+
+  $("#breadcrumbs-barometer").empty();
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\''+dimension+'\')">'+dimension+'</span> <img src="svg/arrow-right.svg"> <span>'+titleTemp+'</span> <img src="svg/arrow-right.svg">');
+
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(String(year.anio)==String(pY)){
+
+      let dataDimension = [];
+      let op = 0;
+      let us = 0;
+      let io = 0;
+      let iu = 0;
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+
+            if(subdimen.subdimension=="Expectativa Futura"){
+              $.each(subdimen.categorias, function(k3,cat) {
+
+
+                $.each(cat.actorlogisticos, function(k4,actor) {
+                  if(actor.actorlogistico=="Operador"){
+                    op +=parseInt(actor.valor);
+                    io++; 
+                  }
+                  else if(actor.actorlogistico=="Usuario"){
+                    us +=parseInt(actor.valor);
+                    iu++; 
+                  }
+                  
+
+                });
+
+                
+
+
+
+
+
+
+              });
+            }
+
+          });
+          
+        }
+        
+
+      });
+
+      if(io>0) op = parseInt(op/io);
+      if(iu>0) us = parseInt(us/iu);
+
+      window.labelsGraph.push("Operador");
+      window.labelsGraph.push("Usuario");
+      dataDimension.push(op);
+      dataDimension.push(us);
+
+      let dataset = {
+        label: "Expectativa Futura "+pY,
+        data: dataDimension,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(String(year.anio)==String(cY)){
+
+      let dataDimension = [];
+      let op = 0;
+      let us = 0;
+      let io = 0;
+      let iu = 0;
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+
+            if(subdimen.subdimension=="Visión Situación Actual"){
+              $.each(subdimen.categorias, function(k3,cat) {
+
+
+                $.each(cat.actorlogisticos, function(k4,actor) {
+                  if(actor.actorlogistico=="Operador"){
+                    op +=parseInt(actor.valor);
+                    io++; 
+                  }
+                  else if(actor.actorlogistico=="Usuario"){
+                    us +=parseInt(actor.valor);
+                    iu++; 
+                  }
+                  
+
+                });
+
+                
+
+
+              });
+            }
+
+          });
+          
+        }
+        
+
+      });
+
+
+      if(io>0) op = parseInt(op/io);
+      if(iu>0) us = parseInt(us/iu);
+
+      dataDimension.push(op);
+      dataDimension.push(us);
+
+
+
+      let dataset = {
+        label: "Visión Situación Actual "+cY,
+        data: dataDimension,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+
+
+
+  removeData(window.myBarometerGraph);
+  addData(window.labelsGraph,datasets,window.myBarometerGraph);
+
+
+
+
+
+}
+
+
+function renderGraphBarometerParent(ID){
+
+  $('.graph-charact').show();
+
+  let dimension = $(ID).data('dimension');
+  $('.card-items').removeClass("item-active");
+  $('.card-items').css("background", "white");
+  $(ID).addClass("item-active");
+  $(".item-active").css("background", $(ID).data('color'));
+  
+
+
+  let datasets = [];
+  let iterator = 0;
+  window.labelsGraph = [];
+
+  window.labelsGraph.push("Barómetro: "+dimension);
+
+  window.myBarometerGraph.options.plugins.title.text = "Barómetro: "+dimension;
+
+  if(dimension=="Indicador de Percepción del Barómetro logístico"){
+    $('#description-chart-barometer').text("Se presenta el resultado del porcentaje de empresas que cuentan con visión positiva sobre la situación actual y la situación futura de la logística del comercio exterior.");
+  }
+  else if(dimension=="Indicador TI de la Logística chilena"){
+    $('#description-chart-barometer').text("Se presenta el resultado alcanzado por el índice TI para cada medición.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena"){
+    $('#description-chart-barometer').text("Se presenta el resultado del Indicador de Desempeño de la Logística chilena que corresponde al resultado de la evaluación de satisfacción de una serie de elementos relacionados con el Sistema Logístico nacional.");
+  }
+  else if(dimension=="Indicador de Sostenibilidad de la Logística chilena"){
+    $('#description-chart-barometer').text("Se presenta el resultado asociado al índice de percepción de Sostenibilidad de la Logística chilena que comprende desde la dimensión ambiental a aquella referente al bienestar de los(as) trabajadores(as), mostrando su responsabilidad empresarial dentro y fuera de la empresa.");
+  }
+  else if(dimension=="Indicador de información para la competitividad del sector logístico"){
+    $('#description-chart-barometer').text("Se presenta el resultado del índice de información para la competitividad del sector logístico que se entiende como el resultado del acceso a información que favorezca la actualización y la competitividad en el sistema logístico.");
+  }
+  else $('#description-chart-barometer').text("");
+
+
+  $("#breadcrumbs-barometer").empty();
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\''+dimension+'\')">'+dimension+'</span> <img src="svg/arrow-right.svg">');
+
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(window.yearsCurrent.includes(String(year.anio))){
+
+      let dataDimension = [];
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          dataDimension.push(dimen.valor);
+          
+        }
+        
+
+      });
+
+
+
+      let dataset = {
+        label: String(year.anio),
+        data: dataDimension,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+  removeData(window.myBarometerGraph);
+  addData(window.labelsGraph,datasets,window.myBarometerGraph);
+
+
+
+
+
+}
+
+
+
+
+
+
+function renderGraphBarometerSubDimension(ID,texto1=false,texto2=false){
+
+
+  $('.graph-charact').show();
+
+  let dimension = null;
+  let subdimension = null;
+
+  if(texto1!==false && texto2!==false){
+    dimension = texto1;
+    subdimension = texto2;
+  }
+  else{
+    dimension = $(ID).data('dimension');
+    subdimension = $(ID).data('subdimension');
+
+    $('.card-items').removeClass("item-active");
+    $('.card-items').css("background", "white");
+    $(ID).addClass("item-active");
+    $(".item-active").css("background", $(ID).data('color'));
+    
+  }
+  
+  let datasets = [];
+  let iterator = 0;
+  window.labelsGraph = [];
+
+
+  window.myBarometerGraph.options.plugins.title.text = dimension+" - "+subdimension;
+
+
+
+  if(dimension=="Indicador de Percepción del Barómetro logístico" && subdimension=="Expectativa Futura"){
+    $('#description-chart-barometer').text("Se presenta la desagregación de empresas que cuentan con expectativas positivas de la situación futura de la logística del comercio exterior según correspondan a usuarios (importadores/exportadores) y operadores logísticos.");
+  }
+  else if(dimension=="Indicador de Percepción del Barómetro logístico" && subdimension=="Visión Situación Actual"){
+    $('#description-chart-barometer').text("Se presenta la desagregación de empresas que cuentan con expectativas positivas de la situación actual de la logística del comercio exterior según correspondan a usuarios (importadores/exportadores) y operadores logísticos.");
+  }
+  else if(dimension=="Indicador TI de la Logística chilena" && subdimension=="Acceso a Sistemas de Trazabilidad de Carga"){
+    $('#description-chart-barometer').text("Se presentan los resultados de las empresas participantes que declaran contar con acceso a sistema de trazabilidad de la carga.");
+  }
+  else if(dimension=="Indicador TI de la Logística chilena" && subdimension=="Integraciones con Otros Actores"){
+    $('#description-chart-barometer').text("Se presentan los resultados de las empresas participantes que declaran contar con acceso a sistema integrado de datos.");
+  }
+  else if(dimension=="Indicador TI de la Logística chilena" && subdimension=="Porcentaje de Trámites Electrónicos"){
+    $('#description-chart-barometer').text("Se presentan los resultados de las empresas participantes (importadores/exportadores) que declaran contar con acceso a trámites electrónicos.");
+  }
+  else if(dimension=="Indicador TI de la Logística chilena" && subdimension=="Sistema Integrado de Comercio"){
+    $('#description-chart-barometer').text("Corresponde al porcentaje de empresas inscritas en el SICEX que registran sus transacciones.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Desarrollo de Proyectos I+D"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara desarrollar Proyectos de I+D.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Desarrollo de Proyectos I+D en Conjunto con Otros Actores"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara desarrollar Proyectos de I+D en red, es decir, en conjunto con otros actores.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Entregas a tiempo y en forma"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje promedio de entregas que fueron entregadas a tiempo y en buen estado.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Realización de Capacitaciones"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara haber realizado inversión en  capacitaciones.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción Actualización tecnológica"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la actualización tecnológica del sistema logístico.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción Infraestructura"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la infraestructura  del sistema logístico.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción Responsabilidad actores con Medio Ambiente"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la responsabilidad de los actores del sistema logístico con el medioambiente.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción Trazabilidad Envíos"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la trazabilidad de los envíos del sistema logístico.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción con Claridad requerimientos aduanas y fronteras"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la claridad en los requerimientos de despacho de aduanas y fronteras del sistema logístico.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción con Rapidez despacho aduanas y fronteras"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la Rapidez en el despacho de aduanas y fronteras");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción con Simplicidad en aduanas y fronteras"){
+    $('#description-chart-barometer').text("Se presentan los resultados al porcentaje de empresas que declara alta satisfacción (notas 6 y 7) con la Simplicidad en el proceso de despacho de aduanas y fronteras.");
+  }
+  else if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción Sistema Logístico"){
+    $('#description-chart-barometer').text("Se presentan el porcentaje de empresas que le puso nota 6 o superior (escala entre 1 y 7) a cada dimensión de satisfacción");
+  }
+  else if(dimension=="Indicador de Sostenibilidad de la Logística chilena" && subdimension=="Accidentabilidad"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de accidentabilidad de las empresas. Se calcula multiplicando el número de accidentes del sector Transporte almacenamiento y comunicaciones por mil y dividiendo por el número de trabajadores del mismo sector.");
+  }
+  else if(dimension=="Indicador de Sostenibilidad de la Logística chilena" && subdimension=="Cantidad de Certificaciones"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de empresas que declaran contar con al menos una certificación medioambiental.");
+  }
+  else if(dimension=="Indicador de Sostenibilidad de la Logística chilena" && subdimension=="Medición Huella Carbono"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de empresas que declaran contar con una metodología de medición de la huella de carbono.");
+  }
+  else if(dimension=="Indicador de Sostenibilidad de la Logística chilena" && subdimension=="Relacionamiento con la Comunidad"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de empresas que declaran contar con actividades de relacionamiento o vinculación con las comunidades en donde se insertan.");
+  }
+  else if(dimension=="Indicador de información para la competitividad del sector logístico" && subdimension=="Satisfacción información Disponible Observatorio logístico"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de satisfacción con una serie de elementos asociados a la información disponible en el Observatorio Logístico.");
+  }
+  else if(dimension=="Indicador de información para la competitividad del sector logístico" && subdimension=="Visitas Observatorio logístico"){
+    $('#description-chart-barometer').text("Se presenta el porcentaje de empresas que declara haber visitado el Observatorio Logístico.");
+  }
+  else $('#description-chart-barometer').text("");
+
+
+
+
+
+
+  $("#breadcrumbs-barometer").empty();
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\''+dimension+'\')">'+dimension+'</span> <img src="svg/arrow-right.svg">');
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerSubDimension(false,\''+dimension+'\',\''+subdimension+'\')">'+subdimension+'</span> <img src="svg/arrow-right.svg">');
+
+
+
+  //console.log("AAA",dimension+" ",subdimension);
+  
+
+
+  $.each(yearsBarometer, function(k,year) { 
+
+    if(window.yearsCurrent.includes(String(year.anio))){
+
+      let dataTemp = [];
+      let labelTemp = [];
+
+      $.each(year.dimensiones, function(k1,dimen) {
+
+        if(dimen.dimension==dimension){
+
+          $.each(dimen.subdimensiones, function(k2,subdimen) {
+
+
+
+            if(dimension=="Indicador de Desempeño de la Logística chilena" && subdimension=="Satisfacción Sistema Logístico"){
+
+              if(String(subdimen.subdimension).indexOf("Satisfacción")!=-1){
+
+                $.each(subdimen.categorias, function(k3,cat) {
+
+
+                  $.each(cat.actorlogisticos, function(k4,actor) {
+                    let l = "";
+
+                    if(cat.actorlogisticos.length==1){
+
+                      l = actor.actorlogistico=="Total"?subdimen.subdimension:actor.actorlogistico;
+
+                      labelTemp.push(l);
+                      dataTemp.push(actor.valor);
+
+                    }
+                    else{
+                      if(actor.actorlogistico!="Total"){
+
+                        l = actor.actorlogistico;
+
+                        labelTemp.push(l);
+                        dataTemp.push(actor.valor);
+
+                      }
+                      
+                    }
+                    
+
+
+
+                  });
+
+
+
+                });
+              }
+            }
+            else{
+              if(subdimen.subdimension==subdimension){
+
+                $.each(subdimen.categorias, function(k3,cat) {
+
+
+                  $.each(cat.actorlogisticos, function(k4,actor) {
+                    let l = "";
+
+                    if(cat.actorlogisticos.length==1){
+
+                      l = actor.actorlogistico=="Total"?subdimen.subdimension:actor.actorlogistico;
+
+                      labelTemp.push(l);
+                      dataTemp.push(actor.valor);
+
+                    }
+                    else{
+                      if(actor.actorlogistico!="Total"){
+
+                        l = actor.actorlogistico;
+
+                        labelTemp.push(l);
+                        dataTemp.push(actor.valor);
+
+                      }
+                      
+                    }
+                    
+
+
+
+                  });
+
+
+
+                });
+              }
+            }
+
+
+
+
+          });
+        }
+        
+
+      });
+
+
+
+      let dataBarometer = [];
+      window.labelsGraph = [];
+
+      $.each(labelTemp, function(k0,label0) {
+
+        if(!window.labelsGraph.includes(String(label0))){
+
+          window.labelsGraph.push(label0);
+          let dataValue = 0;
+          let it = 0;
+          $.each(labelTemp, function(k1,label1) {
+            if(label0==label1){
+              dataValue += parseInt(dataTemp[k1]);
+              it++;
+            }
+
+          });
+
+          if(it>0) dataValue = parseInt(dataValue/it);
+
+          dataBarometer.push(dataValue);
+        }
+
+      });
+
+
+
+
+      //console.log("DATA",dataBarometer);
+      //console.log("DATA",window.labelsGraph);
+
+
+
+      let dataset = {
+        label: String(year.anio),
+        data: dataBarometer,
+        backgroundColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderColor: colors[window.yearsCurrent.indexOf(String(year.anio))],
+        borderWidth: 1,
+        maxBarThickness: 100,
+        datalabels:{
+          anchor: 'end',
+          align: 'top',
+          color: colors[window.yearsCurrent.indexOf(String(year.anio))], 
+          offset: 5
+        }
+      };
+
+      datasets.push(dataset);
+      iterator++;
+
+
+
+    }
+
+  });
+
+
+
+  removeData(window.myBarometerGraph);
+  addData(window.labelsGraph,datasets,window.myBarometerGraph);
+
+
+
+
+
+}
+

@@ -1,0 +1,146 @@
+html,body{
+	overflow-x: hidden;
+	background: white !important;
+	
+}
+
+
+body{
+	padding: 50px;
+}
+
+
+.col-center-block {
+	padding: 10px 20px;
+	float: none;
+	display: block;
+	margin: 0 auto;
+	width: max-content;
+}
+
+#body-main{
+	padding: 200px 50px;
+	background: white url('../svg/bg.svg');
+	background-repeat: no-repeat;
+	background-size: cover; 
+}
+
+
+#body-characterization{
+	display: none;
+	padding: 20px;
+	background: #f8f9fa;
+	border-radius: 20px;
+}
+
+
+
+#body-barometer{
+	display: none;
+	padding: 20px;
+	background: #f8f9fa;
+	border-radius: 20px;
+}
+
+
+.card-bg{
+	background: white; border: 1px solid #F2F2F2; border-radius: 10px;padding: 10px;
+}
+
+
+.card-item{
+	width: 100%;
+	background: white; border: 1px solid #F2F2F2; border-radius: 5px;
+	margin-bottom: 5px;
+	padding: 20px 35px 20px 10px;
+	border-left: 4px solid #2979FF;
+	color: #3b3f42;
+	font-weight: 300;
+}
+
+.card-item:hover{
+	color: #3b3f42;
+}
+
+.card-item img{
+	position: absolute;
+	right: 25px;
+}
+
+
+
+.char-items{
+	display: none;
+}
+
+a{
+	text-decoration: none !important;
+}
+
+select{
+	border: 1px solid #2979FF !important;
+	background: white !important;
+	border-radius: 5px !important;
+	padding: 7px 12px !important;
+	color: #2979FF !important;
+}
+
+
+.collapse-custom{
+	padding-left: 20px;
+}
+
+
+
+.collapse-custom div{
+	border-left: 4px solid #a4a4a4;
+	cursor: pointer;
+}
+
+.years-selected{
+	padding: 10px 0;
+}
+
+.span-year{
+	padding: 4px 2px 6px 10px;
+	margin: 5px 5px 5px 0px;
+	color: white;
+	border-radius: 10px;
+}
+
+
+.close-year{
+	background: white;
+	padding: 3px 8px;
+	font-size: 15px;
+	border-radius: 9px;
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+.item-active{
+	background: #2979ff;
+color: white !important;
+border-left: 4px solid #0448b9 !important;
+}
+
+
+.item-active img{
+	filter: invert(1);
+}
+
+
+.card-single-btn{
+
+  padding: 10px 0px !important;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.09);
+  cursor: pointer;
+
+}
+
+
+canvas{
+	max-height: 350px;
+}
