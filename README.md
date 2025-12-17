@@ -24,7 +24,7 @@ Esta aplicación es un servicio que entrega la fundación **Conecta Logística**
 
 1. Clonar Repositorio
 2. Instalar Dependencias `npm install`
-3. Ejecutar Aplicación: Con una extensión como [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) o [Live Preview](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) se asegura una correcta carga de recursos para la página estática
+3. Ejecutar Aplicación: Con una extensión como [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) o [Live Preview](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) se asegura una correcta carga de recursos para la página estática.
 
 ## Configuración de Entorno
 
@@ -36,3 +36,7 @@ var env = "dev" // Usa JSON para los datos
 
 var env = "prod" // Conecta con la API del Observatorio Logístico
 ```
+
+## Página Oficial
+
+En el [Observatorio Logístico](https://www.observatoriologistico.cl/reportes-de-datos/barometro-de-la-logistica-de-comercio-exterior-de-chile) de Conecta Logística se encuentra desplegada la aplicación para el público.
