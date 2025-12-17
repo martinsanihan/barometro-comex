@@ -1,60 +1,38 @@
-# Gráficos manual en nuevo Observatorio Logistico
+# Barómetro del Comercio Exterior
 
-## Descripción
-
-Repo para ir dejando los gráficos que se editen y/o configuren manualmente, prescindiendo de la aplicación de gestión de gráficos. 
-Contendría, además, funciones auxiliares para mantener lo más estandarizado posible los códigos.
+Esta aplicación es un servicio que entrega la fundación **Conecta Logística** que busca presentar indicadores logísticos y caracterización de las empresas afiliadas.
 
 
----
+## Tecnologías Utilizadas
 
-## manejo de versiones
-Las versiones se manejan para cada gráfico de manera independiente.
+- **Core:** HTML5, CSS3, JavaScript (ES6+)
+- **Librerías JS:**
+  - [jQuery](https://jquery.com/): Manipulación del DOM y lógica de eventos.
+  - [Chart.js](https://www.chartjs.org/): Renderizado de gráficos interactivos y visualización de datos.
+  - [Axios](https://axios-http.com/): Manejo de peticiones HTTP para obtención de datos.
+- **Estilos:**
+  - [Bootstrap 4](https://getbootstrap.com/): Diseño responsivo y componentes de interfaz.
+  - CSS personalizado para animaciones y estilos específicos del barómetro.
 
-### Flujo de versionado de visualizaciones
+## Requisitos del Sistema
 
-Este repositorio contiene distintas visualizaciones (`viz/c001`, `viz/c006`, etc.).  
-El control de versiones se realiza con **tags en la rama `main`**, de la forma:
+1. **Navegador Web Moderno** (Chrome, Firefox, etc...)
+2. **Editor de Código** (Opcional, pero recomendado para realizar cambios)
+3. **Node.js** (Para instalar librerías)
 
-- **Tags**: marcan versiones estables/publicadas de cada visualización.  
-- **Ramas de feature**: se usan para desarrollo temporal, pero no se taggean.  
-- **Convención de nombres**: `[código]-v[versión]`, por ejemplo:  
-  - `c001-v1.0` → primera versión estable de `c001`  
-  - `c001-v1.1` → mejora o actualización de `c001`  
-  - `c006-v1.0` → primera versión estable de `c006`  
+## Instalación y Ejecución
 
+1. Clonar Repositorio
+2. Instalar Dependencias `npm install`
+3. Ejecutar Aplicación: Con una extensión como [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) o [Live Preview](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) se asegura una correcta carga de recursos para la página estática
 
-Los tags se crean **después** de un merge y si antepone el identificador de la visualización para facilitar la lectura. 
-git aplica el tag a todo el repo, por lo que es importante que se modifique SOLO los archivos correspondiente a una sola viz. En caso de que la modificación se realice a un archivo 'base' (ej. utils.js) por cambio de librerías u otro que **altere el funcionamiento visible** de los gráficos, ahbrá que actualizar las versiones de todos los gráficos.
+## Configuración de Entorno
 
-#### Esquema del flujo en `main`
+Dentro de *index.html* se puede modificar la variable *env* para desarrollo local o visualizar la app en producción
 
-(main branch)
+```JavaScript
+// Linea 66
+var env = "dev" // Usa JSON para los datos
 
-●───●────────●────────●────────●
-    │        │        │        │
-    │        │        │        └── Tag: c012-v1.0
-    │        │        └── Tag: c006-v1.0
-    │        └── Tag: c001-v1.1
-    └── Tag: c001-v1.0
-
-#### Ejemplos de uso
-
-1. Crear un tag para la primera versión de `c001`:
-```bash
-git tag -a c001-v1.0 -m "Versión inicial de C001"
-git push origin c001-v1.0
+var env = "prod" // Conecta con la API del Observatorio Logístico
 ```
-
-2. Crear un tag luego de una mejora en `c001`:
-```bash
-git tag -a c001-v1.1 -m "Mejora tooltip en C001"
-git push origin c001-v1.1
-```
-
-3. Crear un tag para la primera versión de `c006`:
-```bash
-git tag -a c006-v1.0 -m "Versión inicial de C006"
-git push origin c006-v1.0
-```
-
