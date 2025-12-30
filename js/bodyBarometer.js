@@ -61,7 +61,7 @@ function bodyBarometer(data, is_hash = false) {
 
         // console.log(dimen);
         let newDimension = '<div class="panel-heading">';
-        if (dimen === 'Percepción de la Logística chilena') {
+        if (dimen === 'Percepción de la Logística') {
           newDimension += '<a style="border-left: 4px solid ' + window.colorIndicador[k1] + ' !important;" onclick="renderGraphBarometerFuturaVsActual(this)" data-color="' + window.colorIndicador[k1] + '" data-dimension="' + dimen + '" href="#dimension-' + k1 + '" data-toggle="collapse" data-parent="#accordion" class="col-center-block card-item card-items">';
 
         }
@@ -77,7 +77,7 @@ function bodyBarometer(data, is_hash = false) {
         var subdims = data[dimen];
         const opUsGraphSD = 'Expectativa Futura vs Situación Actual Operadores y Usuarios'
 
-        if (dimen === 'Percepción de la Logística chilena') {
+        if (dimen === 'Percepción de la Logística') {
           // newDimension += '<div style="border-left: 4px solid ' + window.colorIndicador[k1] + ' !important;" data-color="' + window.colorIndicador[k1] + '" onclick="renderGraphBarometerFuturaVsActualOpUs(this)" data-dimension="' + dimen + '"  class="col-center-block card-item card-items">Expectativa Futura vs Situación Actual Operadores y Usuarios <img src="svg/arrow-right.svg"></div>';
           newDimension += '<div style="border-left: 4px solid ' + window.colorIndicador[k1] + ' !important;" data-color="' + window.colorIndicador[k1] + '" onclick="renderOpUsGraphApproach2(this)" data-dimension="' + dimen + '"  data-subdimension="' + opUsGraphSD + '"  class="col-center-block card-item card-items">Expectativa Futura vs Situación Actual Operadores y Usuarios<img src="svg/arrow-right.svg"></div>';
         }

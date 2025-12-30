@@ -115,10 +115,10 @@ function genChartData(dim, aniosSelected, datosAgrupados) { //Función para form
   // console.log(subdimObjs);
   const xLabels = Object.keys(subdimObjs); //Almacena los nombres de las subdimensiones en una lista
   const xla = xLabels.map(label => {
-    return splitIntoLines(label,25)
+    return splitIntoLines(label,30)
   });
   
-  // console.log(xLabels, xla);
+  console.log(xLabels, xla);
   const dataSets = aniosSelected.map((anioSel, i) => {
     const valoresAnio = xLabels.map(subdimension => {
       const registrosSubdim = subdimObjs[subdimension]; //Almacena los objetos dentro de una subdimensión en una constante
@@ -316,7 +316,7 @@ async function expSitChart(years) {
   window.myBarometerGraph.options.plugins.title.text = titleTemp;
 
   $("#breadcrumbs-barometer").empty();
-  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\'' + 'Percepción de la Logística chilena' + '\')">' + 'Percepción de la Logística chilena' + '</span> <img src="svg/arrow-right.svg"> <span>' + titleTemp + '</span> <img src="svg/arrow-right.svg">');
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\'' + 'Percepción de la Logística' + '\')">' + 'Percepción de la Logística' + '</span> <img src="svg/arrow-right.svg"> <span>' + titleTemp + '</span> <img src="svg/arrow-right.svg">');
 
 
   const datosBarometer = await getBaromData();
@@ -340,7 +340,7 @@ async function expSitChart(years) {
       anio: prevYearStr,
       actor_logistico: 'Total',
       subdimension: 'Expectativa Futura',
-      dimension: 'Percepción de la Logística chilena',
+      dimension: 'Percepción de la Logística',
       valor: null,
       comentario: `Se elabora a partir de un conjunto de preguntas que caracterizan la situación de los actores logísticos respecto al año anterior. Nota: La métrica de este indicador de percepción puede tomar valores entre -100 y 100 y se obtiene como la diferencia entre la cantidad de respuestas positiva y negativa, respecto al total de respuestas, multiplicado por 100.`
     }
@@ -377,7 +377,7 @@ async function expSitSubChart(years) {
   let titleTemp = "Expectativa futura expresada el " + prevYear + " vs Situación real del año " + maxYear + " por Operadores y Usuarios";
   window.myBarometerGraph.options.plugins.title.text = titleTemp;
 
-  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\'' + 'Percepción de la Logística chilena' + '\')">' + 'Percepción de la Logística chilena' + '</span> <img src="svg/arrow-right.svg"> <span>' + titleTemp + '</span> <img src="svg/arrow-right.svg">');
+  $("#breadcrumbs-barometer").append('<span style="cursor: pointer;" onclick="renderGraphBarometerDimension(false,\'' + 'Percepción de la Logística' + '\')">' + 'Percepción de la Logística' + '</span> <img src="svg/arrow-right.svg"> <span>' + titleTemp + '</span> <img src="svg/arrow-right.svg">');
 
   const datosBarometer = await getBaromData();
   const datosFiltrados = datosBarometer.filter(item =>
@@ -464,9 +464,11 @@ function genExpSitSubData(pivotData, prev, max) {
 
 function genLollipopData(datosBarometer) {
   const lolliData = [];
-  const datosFiltrados = datosBarometer.filter(d => d.dimension === 'Percepción de la Logística chilena' &&
+  const datosFiltrados = datosBarometer.filter(d => d.dimension === 'Percepción de la Logística' &&
     d.actor_logistico === 'Total'
   );
+
+  console.log("datos para percepción total", datosFiltrados);
 
   // const uniqueYears = [...new Set(datosFiltrados.map(d => parseInt(d.anio)))].sort((a,b) => a - b);
   const selectedYears = window.yearsCurrent;
@@ -483,13 +485,11 @@ function genLollipopData(datosBarometer) {
     // console.log(yearN);
 
     const expectativa = datosFiltrados.find(d => d.anio === yearN_1 &&
-      d.subdimension === 'Expectativa Futura' &&
-      d.actor_logistico === 'Total'
+      d.subdimension === 'Expectativa Futura'
     );
 
     const sitActual = datosFiltrados.find(d => d.anio === yearN &&
-      d.subdimension === 'Situación Actual' &&
-      d.actor_logistico === 'Total'
+      d.subdimension === 'Situación Actual'
     );
 
     
@@ -522,38 +522,20 @@ function genLollipopData(datosBarometer) {
   const yearFin = String(selectedYears[selectedYears.length - 1]);
   const yearFin1 = String(parseInt(yearFin) + 1);
 
+  console.log("ultimo año y uno más", yearFin, yearFin1);
+
   const expecFin = datosFiltrados.find(d => d.anio === yearFin &&
-    d.subdimension === 'Expectativa Futura' &&
-    d.actor_logistico === 'Total'
+    d.subdimension === 'Expectativa Futura'
   );
-  const sitFin1 = datosFiltrados.find(d => d.anio === yearFin1 &&
-    d.subdimension === 'Situación Actual' &&
-    d.actor_logistico === 'Total'
-  );
-
-  if (expecFin && sitFin1 && yearFin === '2024') {
-    lolliData.push({
-      xLabel: `${yearFin1}`,
-      expectativa: expecFin.valor,
-      situacion: sitFin1.valor,
-      diffBar: true,
-      comentario: sitFin1.comentario,
-      min: roundMin,
-      max: roundMax
-    });
-  }
-  else if (expecFin && !sitFin1 && yearFin === '2024') {
-    lolliData.push({
-      xLabel: `${yearFin1}`,
-      expectativa: expecFin.valor,
-      situacion: null,
-      diffBar: false,
-      min: roundMin,
-      max: roundMax
-    });
-  }
-
-  // console.log('data for lollipop chart', lolliData);
+ 
+  lolliData.push({
+    xLabel: `${yearFin1}`,
+    expectativa: expecFin.valor,
+    diffBar: false,
+    comentario: expecFin.comentario,
+    min: roundMin,
+    max: roundMax
+  });
 
   return lolliData;
 }
@@ -621,16 +603,16 @@ function genOpUsLollipopData(datosBarometer) {
 
   const selectedYears = window.yearsCurrent;
 
-  const datosFiltrados = datosBarometer.filter(d => d.dimension === 'Percepción de la Logística chilena' &&
+  const datosFiltrados = datosBarometer.filter(d => d.dimension === 'Percepción de la Logística' &&
     d.actor_logistico !== 'Total'
   );
 
-  console.log(datosFiltrados);
+  console.log("datos para percepción operadores/usuarios", datosFiltrados);
 
   const values = datosFiltrados.map(d => d.valor);
   const roundMin = roundBase10(Math.min(...values));
   const roundMax = roundBase10(Math.max(...values));
-  console.log(roundMin,roundMax);
+  // console.log(roundMin,roundMax);
 
   actors.forEach(actor => {
     for (let i = 0; i < selectedYears.length; i++) {
@@ -682,173 +664,21 @@ function genOpUsLollipopData(datosBarometer) {
       d.subdimension === 'Expectativa Futura' &&
       d.actor_logistico === actor
     );
-    const sitFin1 = datosFiltrados.find(d => d.anio === yearFin1 &&
-      d.subdimension === 'Situación Actual' &&
-      d.actor_logistico === actor
-    );
 
-    if (expecFin && sitFin1 && yearFin === '2024') {
-      finalData.push({
-        xLabel: `${yearFin1}`,
-        actor: actor,
-        expectativa: expecFin.valor,
-        situacion: sitFin1.valor,
-        diffBar: true,
-        comentario: sitFin1.comentario,
-        min: roundMin,
-        max: roundMax
-      });
-    }
-    else if (expecFin && !sitFin1 && yearFin === '2024') {
-      finalData.push({
-        xLabel: `${yearFin1}`,
-        actor: actor,
-        expectativa: expecFin.valor,
-        situacion: null,
-        diffBar: false,
-        min: roundMin,
-        max: roundMax
-      });
-    }
+    finalData.push({
+      xLabel: yearFin1,
+      actor: actor,
+      expectativa: expecFin.valor,
+      diffBar: false,
+      comentario: expecFin.comentario,
+      min: roundMin,
+      max: roundMax
+    });
   });
 
-  console.log('data for lollipop OpUs', finalData);
-  return finalData
+  // console.log('data for lollipop OpUs', finalData);
+  return finalData;
 }
-
-// async function OpUsLollipopGraph() {
-//   const chartData = genOpUsLollipopData(await getBaromData());
-
-
-//   const dataOp = chartData.filter(d => d.actor === 'Operador');
-//   const dataUsr = chartData.filter(d => d.actor === 'Usuario');
-//   const labels = dataOp.map(d => d.xLabel);
-//   // const labelsUsr = dataUsr.map(d => d.xLabel);
-//   // const labels = labelsOp.concat(labelsUsr);
-
-//   // console.log(dataOp, dataUsr);
-
-//   const comentario = chartData[0].comentario;
-
-//   // console.log(comentario);
-
-//   const barsDataOp = dataOp.map(d => {
-//     const menor = Math.min(d.situacion, d.expectativa).toFixed(0);
-//     const mayor = Math.max(d.situacion, d.expectativa).toFixed(0);
-//     // const xIndex = window.yearsCurrent.indexOf(d.xLabel);
-
-//     if (d.diffBar === false) {
-//       return [0, 0];
-//     }
-
-//     return [menor, mayor];
-//   });
-
-  
-
-//   const barsDataUsr = dataUsr.map(d => {
-//     if (!d.diffBar) {
-//       return [0, 0];
-//     }
-//     const menor = Math.min(d.situacion, d.expectativa).toFixed(0);
-//     const mayor = Math.max(d.situacion, d.expectativa).toFixed(0);
-//     // const xIndex = window.yearsCurrent.indexOf(d.xLabel);
-
-
-//     return [menor, mayor];
-//   });
-
-//   const x2Labels = [];
-//   // const auxDatasets = [];
-//   for (i = 0; i < window.yearsCurrent.length; i++) {
-//     if (String(window.yearsCurrent[i]) === '2024') {
-//       x2Labels.push('Operador');
-//       x2Labels.push('Usuario');
-//     }
-
-//     x2Labels.push('Operador');
-//     x2Labels.push('Usuario');
-//   }
-
-
-
-//   const lolliDatasets = [
-//     {
-//       type: 'scatter',
-//       label: 'Op. Expectativa',
-//       data: dataOp.map(d => d.expectativa),
-//       pointBackgroundColor: '#f263ffff',
-//       backgroundColor: '#f263ffff',
-//       pointRadius: 7,
-//       stack: 'stack-operador',
-//     },
-//     {
-//       type: 'scatter',
-//       label: 'Op. Situación Actual',
-//       data: dataOp.map(d => d.situacion),
-//       pointBackgroundColor: '#78ff63ff',
-//       backgroundColor: '#78ff63ff',
-//       pointRadius: 7,
-//       stack: 'stack-operador',
-//     },
-//     {
-//       type: 'bar',
-//       label: 'Op. Diferencia',
-//       data: barsDataOp,
-//       barThickness: 2,
-//       stack: 'stack-operador',
-//       // backgroundColor: 'transparent'
-//     },
-//     {
-//       type: 'bar',
-//       label: 'separador1',
-//       data: dataOp.map(() => 50),
-//       barThickness: 30,
-//       stack: 'stack-operador',
-//       backgroundColor: 'transparent'
-//     },
-//     {
-//       type: 'bar',
-//       label: 'separador2',
-//       data: dataOp.map(() => 50),
-//       barThickness: 50,
-//       stack: 'stack-usuario',
-//       backgroundColor: 'transparent'
-//     },
-//     {
-//       type: 'scatter',
-//       label: 'Usr. Expectativa',
-//       data: dataUsr.map(d => d.expectativa),
-//       pointBackgroundColor: '#ff6363ff',
-//       backgroundColor: '#ff6363ff',
-//       pointRadius: 7,
-//       stack: 'stack-usuario',
-//     },
-//     {
-//       type: 'scatter',
-//       label: 'Usr. Situación Actual',
-//       data: dataUsr.map(d => d.situacion),
-//       pointBackgroundColor: '#636dffff',
-//       backgroundColor: '#636dffff',
-//       pointRadius: 7,
-//       stack: 'stack-usuario',
-//     },
-//     {
-//       type: 'bar',
-//       label: 'Usr. Diferencia',
-//       data: barsDataUsr,
-//       barThickness: 2,
-//       stack: 'stack-usuario',
-//       // backgroundColor: 'transparent'
-//     },
-//   ]
-
-//   $('#description-chart-barometer').text(comentario);
-
-
-//   return {lolliDatasets, labels, x2Labels};
-
-// }
 
 async function OpUsLollipopGraphAp2() {
   const chartData = genOpUsLollipopData(window.yearsBarometerOriginal);
@@ -950,7 +780,7 @@ async function OpUsLollipopGraphAp2() {
   ]
 
   const dataTotal = datasetsOp.concat(datasetsUsr);
-  console.log(dataTotal)
+  // console.log(dataTotal)
 
   
   const minMax = dataTotal.forEach((dato) => {
@@ -962,7 +792,7 @@ async function OpUsLollipopGraphAp2() {
       min: min
     }
   });
-  console.log(minMax);
+  // console.log(minMax);
 
   $('#description-chart-barometer').text(comentario);
 

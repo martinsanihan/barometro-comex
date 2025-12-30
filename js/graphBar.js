@@ -119,12 +119,30 @@ function graphBarRender() {
     },
     plugins: [ChartDataLabels],
     options: {
+      datasets: {
+        bar: {
+          barPercentage: 0.9,
+          categoryPercentage: 0.8
+        }
+      },
       responsive: true,
+      // maintainAspectRatio: true,
       scales: {
         y: {
           max: 100,
           min: 0
           // display: false,
+        },
+        x: {
+          ticks: {
+            autoSkip: false,
+            maxRotation: 90,
+            minRotation: 0,
+            sampleSize:10,
+            font: {
+              size: 10
+            }
+          }
         }
       },
       plugins: {
@@ -186,7 +204,9 @@ function graphBarRender() {
       layout: {
         padding: {
           top: 10,
-          bottom: 10
+          left: 10,
+          right: 10,
+          bottom: 60
         }
       },
     }
@@ -593,7 +613,7 @@ function OpUsLollipopChartRender2(dataset) {
 
 function addData(labels, datasets, graph) {
   labels.forEach((label) => {
-    graph.data.labels.push(label);//splitIntoLines(label, 25));
+    graph.data.labels.push(label);
   });
   graph.data.datasets = datasets;
   graph.update();
